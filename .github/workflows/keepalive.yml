@@ -2,16 +2,15 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-    # 매 3일마다 00:00(UTC)에 자동으로 실행
     - cron: '0 0 */3 * *'
-  workflow_dispatch: # GitHub 웹 화면에서 수동으로도 실행할 수 있게 설정
+  workflow_dispatch:
 
 jobs:
-  ping-supabase:
+  ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Keep-Alive Ping to Supabase
+      - name: Query Supabase Database
         run: |
-          curl -i -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/" \
+          curl -i -X GET 'https://ijihafavwauwfvrqfuyv.supabase.co/rest/v1/YOUR_TABLE_NAME?select=*&limit=1' \
           -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
           -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
