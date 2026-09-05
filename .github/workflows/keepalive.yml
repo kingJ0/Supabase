@@ -2,15 +2,20 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-    - cron: '0 0 */3 * *'
+    # 매일 한국 시간 오전 9시(00:00 UTC)에 실행되어 7일 미활동 카운트를 매일 리셋
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Query Supabase API
+      - name: Ping Supabase Auth & DB Engines
         run: |
-          curl -i -X GET 'https://ijihafavwauwfvrqfuyv.supabase.co/rest/v1/' \
+          echo "1. Pinging Auth Engine..."
+          curl -i -s -X GET 'https://ijihafavwauwfvrqfuyv.supabase.co/auth/v1/health'
+          
+          echo -e "\n2. Executing Real DB Query via REST API..."
+          curl -i -s -X GET 'https://ijihafavwauwfvrqfuyv.supabase.co/rest/v1/?select=*' \
             -H "apikey: ${{ secrets.SUPABASE_SERVICE_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_KEY }}"
